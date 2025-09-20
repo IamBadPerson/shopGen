@@ -3,7 +3,7 @@ from csv import reader, DictReader
 from tinydb.table import Document
 from rich.table import Table
 from rich.console import Console
-
+from loguru import logger
 from shopGen.data.stock import StockData
 from shopGen.data.shop import ShopData
 
@@ -55,12 +55,13 @@ def import_master_price():
             if isinstance(value, str):
                 try:
                     value = int(float(value.replace(",", "")))
-                except BaseException:  # any problems just move on
+                except BaseException as err:  # any problems just move on
+                    logger.error(err)
                     with open('data/log.txt', mode='a') as file:
                         file.write(str(e))
                         value = 0
                     continue
-            
+
             stockTable.insert(
                 name=e['Item'],
                 type=e['Class'],
@@ -80,9 +81,15 @@ def importShards():
                 for each in csv:
                     try:
                         if isinstance(each['wealth'], str):
-                            each['wealth'] = int(float(each['wealth'].replace(",", "")))
-                        shopObj.insert(name=each['name'], shopType=each['shop_type'], size=each['size'], wealth=each['wealth'])
-                    except TypeError:
+                            each['wealth'] = int(
+                                float(each['wealth'].replace(",", "")))
+                        shopObj.insert(
+                            name=each['name'],
+                            shopType=each['shop_type'],
+                            size=each['size'],
+                            wealth=each['wealth'])
+                    except TypeError as err:
+                        logger.error(err)
                         with open('data\\log.txt', mode='a') as fObj:
                             fObj.write(str(each))
                             continue

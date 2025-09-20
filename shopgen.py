@@ -1,5 +1,6 @@
 import click
 from tinydb import Query
+from loguru import logger
 from shopGen.data.shop import ShopData
 from shopGen.data.stock import StockData
 from shopGen.data.exceptions import ValidationException
@@ -9,6 +10,7 @@ from shopGen.shop import showShop
 from shopGen.common import import_master_price, importShards, create_table_from_rows
 from shopGen.data.main import truncateDatabase
 
+logger.add('data/log/file_shopgen.log', format="{time} {level} {message}", level="INFO")
 
 @click.group()
 def cli(): pass
@@ -18,6 +20,7 @@ def cli(): pass
 def reset():
     """deletes all data and import"""
     if click.confirm('This action will destory all of your data'):
+        logger.info("starting a reset.")
         truncateDatabase()
         import_master_price()
         importItems()
@@ -61,7 +64,7 @@ def create(name, shop_type, size, wealth):
             wealth=wealth
         )
     except ValidationException as err:
-        print(err)
+        logger.error(err)
     pass
 
 
