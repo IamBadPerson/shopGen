@@ -9,6 +9,7 @@ from shopGen.shop import list_all_shops, get_all_docIds, shop_type_options
 from shopGen.shop import showShop
 from shopGen.common import import_master_price, importShards, create_table_from_rows
 from shopGen.data.main import truncateDatabase
+from shopGen.stock import copper_to_coins
 
 logger.add('data/log/file_shopgen.log', format="{time} {level} {message}", level="INFO")
 
@@ -111,13 +112,17 @@ def create(name: str, type: str, weight: int, cost_cp: int):
     )
 
 @stock.command()
-@click.option('--key', type=click.Choice(['name', 'type',]), default='')
+@click.option('--key', type=click.Choice(['name', 'type', '']), default='')
 @click.option('--value', type=str, default='')
 def list(key: str, value: str):
     if len(key) > 0:
         data = StockData().table.search(Query()[key] == value)
     else:
         data = StockData().all()
+
+    # convert prices to usable prices
+    for each in data:
+        each['cost_cp'] = copper_to_coins(each['cost_cp'])
     create_table_from_rows(data)
 
 @stock.command()

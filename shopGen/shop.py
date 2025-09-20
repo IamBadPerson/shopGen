@@ -8,6 +8,7 @@ from loguru import logger
 from shopGen.data.shop import ShopData
 from shopGen.data.stock import StockData
 from shopGen.common import create_table_from_rows
+from shopGen.stock import copper_to_coins, price_calc
 
 
 shop_item_map = {
@@ -152,8 +153,13 @@ def showShop(shop_id: int):
 
     stockItems = []
     for each in sData['stock']:
+        price = price_calc(
+            each['cost_cp'],
+            shop_supply=sData['shop_stats_supply'],
+            shop_demand=sData['shop_stats_demand'],
+            shop_stability=sData['shop_stats_stability'])
         rendString = Panel(
-            f"{each.doc_id}  {each['name']} - {each['cost_cp']}", width=20, height=5)
+            f"{each.doc_id}  {each['name']} - \n {copper_to_coins(each['cost_cp'])}", width=40, height=5)
         stockItems.append(rendString)
 
     layout = Layout()
