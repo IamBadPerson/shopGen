@@ -1,10 +1,12 @@
 import click
+from tinydb import Query
 from shopGen.data.shop import ShopData
+from shopGen.data.stock import StockData
 from shopGen.data.exceptions import ValidationException
 from shopGen.http import importItems
 from shopGen.shop import list_all_shops, get_all_docIds, shop_type_options
 from shopGen.shop import showShop
-from shopGen.common import import_master_price, importShards
+from shopGen.common import import_master_price, importShards, create_table_from_rows
 from shopGen.data.main import truncateDatabase
 
 
@@ -82,6 +84,44 @@ def remove(uid):
     if click.confirm(f"remove shop with a id of {uid}?"):
         shopObj = ShopData()
         shopObj.remove_by_id(uid)
+
+@cli.group()
+def stock():
+    """
+    stock is the items by the shop.
+    """
+    pass
+
+@stock.command()
+@click.argument("name", type=str,)
+@click.argument('type', type=click.Choice(StockData().get_all_types()))
+@click.argument('weight', type=int)
+@click.argument('cost_cp', type=int)
+def create(name: str, type: str, weight: int, cost_cp: int):
+    """creates a new stock item"""
+    obj = StockData()
+    return obj.insert(
+        name=name,
+        type=type,
+        weight=weight,
+        cost_cp=cost_cp
+    )
+
+@stock.command()
+@click.option('--key', type=click.Choice(['name', 'type',]), default='')
+@click.option('--value', type=str, default='')
+def list(key: str, value: str):
+    if len(key) > 0:
+        data = StockData().table.search(Query()[key] == value)
+    else:
+        data = StockData().all()
+    create_table_from_rows(data)
+
+@stock.command()
+@click.argument('doc_id', type=int)
+def remove(doc_id):
+    if click.confirm("are you sure?"):
+        StockData().remove_by_id(doc_id)
 
 
 if __name__ == '__main__':
