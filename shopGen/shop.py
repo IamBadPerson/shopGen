@@ -4,11 +4,10 @@ from rich.markdown import Markdown
 from rich.columns import Columns
 from rich.panel import Panel
 from rich.console import Console
-from rich import print
+from loguru import logger
 from shopGen.data.shop import ShopData
 from shopGen.data.stock import StockData
 from shopGen.common import create_table_from_rows
-
 
 
 shop_item_map = {
@@ -119,6 +118,10 @@ def build_shop(doc_id: int):
     stockObj = StockData()
     shop = shopObj.read_by_id(doc_id)
 
+    if 'shop_type' not in shop.keys():
+        logger.debug("shop type not found")
+        return False
+
     item_subList = []
     itemTypes = shop_item_map[shop['shop_type']]
 
@@ -149,7 +152,8 @@ def showShop(shop_id: int):
 
     stockItems = []
     for each in sData['stock']:
-        rendString = Panel(f"{each.doc_id}  {each['name']} - {each['cost_cp']}", width=20)
+        rendString = Panel(
+            f"{each.doc_id}  {each['name']} - {each['cost_cp']}", width=20, height=5)
         stockItems.append(rendString)
 
     layout = Layout()
