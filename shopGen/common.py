@@ -11,6 +11,7 @@ from shopGen.data.shop import ShopData
 def create_table_from_rows(list_docs: list[Document]):
     tbl = Table()
     headers = ["doc_id"]
+    tbl.add_column("ids")
 
     for each in list_docs:
         # check the keys
