@@ -10,7 +10,7 @@ class ShopData(BaseData):
         super().__init__()
         self.update_table_name('SHOP')
 
-    def insert(self, name: str, shopType: str, size: str, wealth: int):
+    def insert(self, name: str, shopType: str, size: str, wealth: int) -> int:
         """
         Inserts new data into database table.
         """
@@ -66,7 +66,3 @@ class ShopData(BaseData):
                 row['shop_stats_supply'] += 1
 
         return self.table.insert(row)
-    
-
-
-

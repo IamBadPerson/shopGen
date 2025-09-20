@@ -56,7 +56,11 @@ def import_master_price():
                 try:
                     value = int(float(value.replace(",", "")))
                 except BaseException:  # any problems just move on
+                    with open('data/log.txt', mode='a') as file:
+                        file.write(str(e))
+                        value = 0
                     continue
+            
             stockTable.insert(
                 name=e['Item'],
                 type=e['Class'],
@@ -74,5 +78,11 @@ def importShards():
             with file.open('r') as fileObj:
                 csv = DictReader(fileObj)
                 for each in csv:
-                    shopObj.insert(name=each['name'], shopType=each['shop_type'], size=each['size'], wealth=each['wealth'])
-                    
+                    try:
+                        if isinstance(each['wealth'], str):
+                            each['wealth'] = int(float(each['wealth'].replace(",", "")))
+                        shopObj.insert(name=each['name'], shopType=each['shop_type'], size=each['size'], wealth=each['wealth'])
+                    except TypeError:
+                        with open('data\\log.txt', mode='a') as fObj:
+                            fObj.write(str(each))
+                            continue
