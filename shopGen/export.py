@@ -31,10 +31,7 @@ class YamlExport:
     def createFile(self):
         
         p = Path(self.path)
-        print(p)
-
         p.write_text(self.create_ymal_object())
-
         return True
 
 
