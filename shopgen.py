@@ -10,6 +10,7 @@ from shopGen.shop import showShop
 from shopGen.common import import_master_price, importShards, create_table_from_rows
 from shopGen.data.main import truncateDatabase
 from shopGen.stock import copper_to_coins
+from shopGen.export import YamlExport
 
 logger.add('data/log/file_shopgen.log', format="{time} {level} {message}", level="INFO")
 
@@ -26,6 +27,11 @@ def reset():
         import_master_price()
         importItems()
         importShards()
+
+@cli.command()
+def export():
+    YamlExport('data/export.ymal').createFile()
+    pass
 
 
 @cli.group()

@@ -218,3 +218,4 @@ __marimo__/
 _play*.py
 *.json
 *.csv
+*.ymal
